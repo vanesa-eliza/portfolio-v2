@@ -1,0 +1,223 @@
+/* Outer container */
+.cpp-outer {
+  /* expanded: block, cards fill full width */
+}
+
+.cpp-outer--active {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+
+/* Cards grid */
+.cpp-cards {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Expanded: 3 columns, full width */
+.cpp-outer:not(.cpp-outer--active) .cpp-cards {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Collapsed: 2 fixed-width columns */
+.cpp-outer--active .cpp-cards {
+  grid-template-columns: repeat(2, 152px);
+  flex-shrink: 0;
+}
+
+/* Panel slot */
+.cpp-panel-slot {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Hint below cards in expanded state */
+.cpp-empty-hint {
+  margin: 0.875rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--muted);
+  opacity: 0.45;
+  text-align: center;
+}
+
+/* Flip card */
+.snippet-card {
+  perspective: 800px;
+  cursor: pointer;
+  height: 112px;
+}
+
+/* Expanded: fill grid column */
+.cpp-outer:not(.cpp-outer--active) .snippet-card {
+  width: 100%;
+  height: 130px;
+}
+
+/* Collapsed: fixed size */
+.cpp-outer--active .snippet-card {
+  width: 152px;
+  height: 112px;
+}
+
+.snippet-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.snippet-card--flipped .snippet-card-inner {
+  transform: rotateY(180deg);
+}
+
+.snippet-card-front,
+.snippet-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.875rem;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.snippet-card:hover .snippet-card-front {
+  border-color: var(--muted);
+}
+
+.snippet-card--active .snippet-card-front,
+.snippet-card--active .snippet-card-back {
+  border-color: var(--accent);
+}
+
+.snippet-card-back {
+  transform: rotateY(180deg);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.snippet-card-category {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  color: var(--accent);
+}
+
+.snippet-card-name {
+  font-size: 0.8rem;
+  font-family: var(--font-serif);
+  color: var(--fg);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.snippet-card-back-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  color: var(--muted);
+}
+
+.snippet-card-back-name {
+  font-size: 0.8rem;
+  font-family: var(--font-serif);
+  color: var(--fg);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Code panel */
+.code-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.code-panel-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.code-panel-title {
+  font-family: var(--font-serif);
+  font-size: 1.375rem;
+  font-weight: 400;
+  color: var(--fg);
+  margin: 0;
+}
+
+.code-panel-compare-hint {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.code-block {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+  font-size: 0.775rem;
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: pre;
+}
+
+.code-highlight {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--accent);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.code-highlight:hover {
+  background-color: rgba(255, 255, 255, 0.11);
+  color: var(--fg);
+}
+
+.code-explanation {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.625;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .cpp-outer--active {
+    flex-direction: column;
+  }
+
+  .cpp-outer:not(.cpp-outer--active) .cpp-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cpp-outer--active .cpp-cards {
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .cpp-outer--active .snippet-card {
+    width: 100%;
+  }
+
+  .cpp-empty-hint {
+    margin-top: 0.5rem;
+  }
+}

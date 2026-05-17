@@ -1,0 +1,303 @@
+.admin-wrap {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem;
+}
+
+.admin-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 6rem 1.5rem 3rem;
+}
+
+.admin-title {
+  font-family: var(--font-serif);
+  color: var(--fg);
+  font-size: 1.75rem;
+  font-weight: 400;
+  margin: 0 0 0.5rem;
+}
+
+.admin-subtitle {
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin: 0 0 2rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-field-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-sans);
+}
+
+.admin-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 0.65rem 0.875rem;
+  font-size: 0.9375rem;
+  font-family: var(--font-sans);
+  outline: none;
+  border-radius: 2px;
+  width: 100%;
+}
+.admin-input:focus { border-color: var(--accent); }
+
+.admin-textarea {
+  min-height: 320px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.admin-textarea--tall {
+  min-height: 420px;
+}
+
+.admin-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.admin-checkbox-row input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent);
+}
+
+.admin-checkbox-row span {
+  color: var(--fg);
+  font-size: 0.9375rem;
+}
+
+.admin-error {
+  color: #e05;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.admin-btn {
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: opacity 0.2s;
+}
+.admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.admin-btn-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.admin-btn-cancel:hover { border-color: var(--fg); color: var(--fg); }
+
+.admin-edit-link {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* Section header with inline edit link */
+.admin-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+.admin-section-header .admin-edit-link {
+  margin-bottom: 0;
+}
+
+/* Timeline entry list */
+.admin-form--section {
+  margin-bottom: 2.5rem;
+}
+.admin-subtitle--section {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+.admin-empty {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.admin-list-item {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.admin-list-item-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+.admin-list-item-title {
+  color: var(--fg);
+  font-weight: 500;
+}
+.admin-list-item-sub {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.admin-list-item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Small button variants */
+.admin-btn-sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+}
+.admin-btn-danger {
+  color: #e05;
+  border-color: #e05;
+}
+.admin-btn-xs {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+}
+.admin-btn-cancel.admin-btn-danger:hover {
+  border-color: #e05;
+  color: #e05;
+}
+
+/* Skills editor */
+.admin-skills-category {
+  margin-bottom: 1.75rem;
+}
+.admin-skills-category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.admin-skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.admin-skill-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  color: var(--fg);
+}
+.admin-skill-tag-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  font-size: 0.9rem;
+}
+.admin-input--short {
+  max-width: 220px;
+}
+.admin-inline-row {
+  display: flex;
+  gap: 0.5rem;
+}
+.admin-new-category {
+  margin-bottom: 2rem;
+}
+.admin-new-category .admin-field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.admin-project-techs {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+.admin-project-techs .admin-subtitle {
+  margin-bottom: 0.75rem;
+}
+
+.admin-error-page {
+  padding: 2rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Project editor */
+.admin-form-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.admin-field--grow { flex: 1; }
+.admin-field-note {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 0.5rem;
+}
+.admin-textarea--short { min-height: 100px; }
+.admin-image-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.admin-image-row .admin-input { flex: 1; }
