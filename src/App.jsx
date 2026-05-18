@@ -1,5 +1,7 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import RequireAuth from './components/RequireAuth'
@@ -19,6 +21,23 @@ import SkillsEditor from './pages/admin/SkillsEditor'
 import ProjectsAdmin from './pages/admin/ProjectsAdmin'
 import ProjectEditor from './pages/admin/ProjectEditor'
 import ProjectsHeaderEditor from './pages/admin/ProjectsHeaderEditor'
+
+function AdminShortcut() {
+  const navigate = useNavigate()
+  const buffer = useRef('')
+
+  useEffect(() => {
+    function handleKey(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+      buffer.current = (buffer.current + e.key).slice(-5)
+      if (buffer.current === 'admin') navigate('/admin/login')
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [navigate])
+
+  return null
+}
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -52,6 +71,7 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <AdminShortcut />
       <Navbar />
       <main>
         <AnimatedRoutes />

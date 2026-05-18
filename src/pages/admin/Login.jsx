@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import '../../styles/Admin.css'
 
 export default function Login() {
-  const { signIn } = useAuth()
+  const { user, loading: authLoading, signIn, signOut } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,6 +19,23 @@ export default function Login() {
     if (error) setError(error.message)
     else navigate('/writing')
     setLoading(false)
+  }
+
+  if (authLoading) return null
+
+  if (user) {
+    return (
+      <div className="admin-wrap">
+        <div className="admin-card">
+          <h1 className="admin-title">Admin</h1>
+          <p className="admin-subtitle">You are signed in as {user.email}.</p>
+          <div className="admin-actions">
+            <button className="admin-btn" onClick={() => signOut().then(() => navigate('/'))}>Sign out</button>
+            <button className="admin-btn-cancel" onClick={() => navigate('/')}>Home</button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

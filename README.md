@@ -73,4 +73,6 @@ public/
 
 ## Admin panel
 
-Navigate to `/admin/login` and sign in with your Supabase auth credentials. From there you can edit all site content: projects, about page, skills, timeline, and writing posts.
+The admin panel is not linked anywhere on the site. To access it, type `admin` anywhere on the page (outside a text input) — this triggers a secret keyboard shortcut that navigates to `/admin/login`.
+
+Sign in with your Supabase auth credentials. From there you can edit all site content: projects, about page, skills, timeline, and writing posts.
