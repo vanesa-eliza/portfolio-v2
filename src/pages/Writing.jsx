@@ -45,30 +45,28 @@ export default function Writing() {
             <div className="writing-line" />
             <span className="writing-label">Writing</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1rem' }}>
-            <h1 className="writing-title">Notes &amp; Essays</h1>
-            {user && (
-              <Link
-                to="/admin/new"
-                style={{
-                  fontSize: '0.75rem',
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: 'var(--accent)',
-                  textDecoration: 'none',
-                  whiteSpace: 'nowrap',
-                  paddingBottom: '0.25rem',
-                }}
-              >
-                + New post
-              </Link>
-            )}
-          </div>
+          <h1 className="writing-title">Notes &amp; Essays</h1>
           <p className="writing-description">
             Writing is where I slow down and think. These posts are about my takeaway from modules I took, the projects I&apos;ve
             built and the ideas they surfaced.
           </p>
         </FadeIn>
+        {user && (
+          <div style={{ marginTop: '-4rem', marginBottom: '1.5rem' }}>
+            <Link
+              to="/admin/new"
+              style={{
+                fontSize: '0.75rem',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: 'var(--accent)',
+                textDecoration: 'none',
+              }}
+            >
+              + New post
+            </Link>
+          </div>
+        )}
 
         {loading && <p style={{ color: 'var(--muted)' }}>Loading…</p>}
         {error && <p style={{ color: 'var(--muted)' }}>Failed to load posts.</p>}

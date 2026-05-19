@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
-import ParticleSphere from '../components/ParticleSphere'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
+
+const ParticleSphere = lazy(() => import('../components/ParticleSphere'))
 import '../styles/Home.css'
 import '../styles/Admin.css'
 
@@ -52,7 +53,9 @@ export default function Home() {
         </div>
 
         <div className="hero-sphere sphere-fade">
-          <ParticleSphere />
+          <Suspense fallback={null}>
+            <ParticleSphere />
+          </Suspense>
         </div>
 
         <div className="hero-content-below container-xl">

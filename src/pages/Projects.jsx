@@ -33,13 +33,15 @@ export default function Projects() {
             <div className="projects-line" />
             <span className="projects-label">Work</span>
           </div>
-          <div className="admin-section-header">
-            <h1 className="projects-title">Projects</h1>
-            {user && <Link to="/admin/projects" className="admin-edit-link">Edit</Link>}
-          </div>
+          <h1 className="projects-title">Projects</h1>
           <p className="projects-description">{description}</p>
-          {user && <Link to="/admin/projects-subtitle" className="admin-edit-link">Edit subtitle</Link>}
         </FadeIn>
+        {user && (
+          <div style={{ marginTop: '-4rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+            <Link to="/admin/projects" className="admin-edit-link" style={{ marginBottom: 0 }}>Edit projects</Link>
+            <Link to="/admin/projects-subtitle" className="admin-edit-link" style={{ marginBottom: 0 }}>Edit subtitle</Link>
+          </div>
+        )}
 
         <div className="projects-grid">
           {items.map((project, i) => (
