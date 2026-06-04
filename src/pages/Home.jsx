@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, lazy, Suspense } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -108,18 +108,41 @@ export default function Home() {
       })
   }, [])
 
+  const pendingSection = useRef(null)
+  const mounted = useRef(false)
+
+  // Scroll to the hashed section: instant on a fresh mount (arriving from
+  // another page), smooth when changing sections in place.
+  useLayoutEffect(() => {
+    pendingSection.current = location.hash ? location.hash.slice(1) : null
+    if (pendingSection.current) {
+      const behavior = mounted.current ? 'smooth' : 'instant'
+      document.getElementById(pendingSection.current)?.scrollIntoView({ behavior, block: 'start' })
+    }
+    mounted.current = true
+  }, [location])
+
+  // Re-anchor as async data grows the page, until the user scrolls.
+  useLayoutEffect(() => {
+    if (!pendingSection.current) return
+    document.getElementById(pendingSection.current)?.scrollIntoView({ behavior: 'instant', block: 'start' })
+  }, [featuredProjects, educationItems, experienceItems, bio, skills, subtitle])
+
   useEffect(() => {
-    if (location.hash === '#about') {
-      // Defer one frame so the section is laid out before scrolling.
-      requestAnimationFrame(() =>
-        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-      )
+    const cancel = () => { pendingSection.current = null }
+    window.addEventListener('wheel', cancel, { passive: true, once: true })
+    window.addEventListener('touchmove', cancel, { passive: true, once: true })
+    window.addEventListener('keydown', cancel, { once: true })
+    return () => {
+      window.removeEventListener('wheel', cancel)
+      window.removeEventListener('touchmove', cancel)
+      window.removeEventListener('keydown', cancel)
     }
   }, [location])
 
   return (
     <PageTransition>
-      <section className="hero">
+      <section id="home" className="hero">
         <div className="hero-content container-xl">
           <div className="hero-content-inner">
             <div className="hero-eyebrow hero-fade">
@@ -246,7 +269,7 @@ export default function Home() {
         </div>
 
         <FadeIn>
-          <div className="about-section">
+          <div id="education" className="about-section">
             <div className="admin-section-header">
               <h2 className="about-section-title">Education</h2>
               {user && <Link to="/admin/timeline/education" className="admin-edit-link">Edit</Link>}
@@ -269,7 +292,7 @@ export default function Home() {
         </FadeIn>
 
         <FadeIn>
-          <div className="about-section">
+          <div id="experience" className="about-section">
             <div className="admin-section-header">
               <h2 className="about-section-title">Experience</h2>
               {user && <Link to="/admin/timeline/experience" className="admin-edit-link">Edit</Link>}
@@ -290,7 +313,7 @@ export default function Home() {
         </FadeIn>
       </section>
 
-      <section className="selected-work container-xl">
+      <section id="projects" className="selected-work container-xl">
         <FadeIn>
           <div className="selected-work-header">
             <h2 className="selected-work-title">Selected Work</h2>

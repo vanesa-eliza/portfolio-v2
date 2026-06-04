@@ -12,7 +12,6 @@ import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Writing from './pages/Writing'
 import PostDetail from './pages/PostDetail'
-import Contact from './pages/Contact'
 import Login from './pages/admin/Login'
 import Editor from './pages/admin/Editor'
 import AboutEditor from './pages/admin/AboutEditor'
@@ -50,7 +49,6 @@ function AnimatedRoutes() {
         <Route path="/projects/:slug" element={<ProjectDetail />} />
         <Route path="/writing" element={<Writing />} />
         <Route path="/writing/:slug" element={<PostDetail />} />
-        <Route path="/contact" element={<Contact />} />
 
         <Route path="/admin/login" element={<Login />} />
         <Route path="/admin/new" element={<RequireAuth><Editor /></RequireAuth>} />

@@ -33,13 +33,13 @@ export default function Typewriter({ segments, anchor = 'left', speed = 110, sta
   const done = count >= total
   const label = ariaLabel ?? segments.map((s) => (s.br ? ' ' : s.text)).join('')
 
-  // Reveal each typed segment up to `count`.
-  let remaining = count
+  // Reveal each typed segment up to `count` total characters.
+  const typedLen = (s) => (s.typed && s.text ? s.text.length : 0)
   const parts = segments.map((s, idx) => {
     if (s.br) return { br: true, idx }
     if (!s.typed) return { text: s.text, em: s.em, idx }
-    const consumed = Math.max(0, Math.min(s.text.length, remaining))
-    remaining -= s.text.length
+    const before = segments.slice(0, idx).reduce((n, p) => n + typedLen(p), 0)
+    const consumed = Math.max(0, Math.min(s.text.length, count - before))
     return {
       idx,
       em: s.em,

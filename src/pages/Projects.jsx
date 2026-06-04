@@ -40,7 +40,7 @@ export default function Projects() {
           <p className="projects-description">{description}</p>
         </FadeIn>
         {user && (
-          <div className="admin-actions">
+          <div className="admin-toolbar">
             <Link to="/admin/projects" className="admin-edit-link">Edit projects</Link>
             <Link to="/admin/projects-subtitle" className="admin-edit-link">Edit subtitle</Link>
           </div>
