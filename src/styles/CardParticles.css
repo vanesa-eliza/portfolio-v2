@@ -1,0 +1,37 @@
+.card-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card-particle {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(241, 36, 128, 0.55);
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  /* Paused until the card is hovered (see ProjectCard.css / PostCard.css). */
+  animation:
+    cardParticleFloat var(--dur) ease-in-out var(--del) infinite alternate,
+    cardParticleTwinkle 1.25s ease-in-out calc(var(--del) * 0.5) infinite alternate;
+  animation-play-state: paused;
+}
+
+@keyframes cardParticleFloat {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(var(--dx), var(--dy), 0); }
+}
+
+@keyframes cardParticleTwinkle {
+  from { opacity: 0.25; }
+  to   { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-particle { animation: none; }
+}

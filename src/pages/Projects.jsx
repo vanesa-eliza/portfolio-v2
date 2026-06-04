@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
+import Typewriter from '../components/Typewriter'
 import ProjectCard from '../components/ProjectCard'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
@@ -18,7 +19,7 @@ export default function Projects() {
   useEffect(() => {
     Promise.all([
       supabase.from('projects').select('*').order('year', { ascending: false }),
-      supabase.from('about').select('value').eq('key', 'projects_description').single(),
+      supabase.from('about').select('value').eq('key', 'projects_description').maybeSingle(),
     ]).then(([{ data: projectsData }, { data: descData }]) => {
       if (projectsData && projectsData.length > 0) setItems(projectsData)
       if (descData) setDescription(descData.value)
@@ -33,13 +34,15 @@ export default function Projects() {
             <div className="projects-line" />
             <span className="projects-label">Work</span>
           </div>
-          <h1 className="projects-title">Projects</h1>
+          <h1 className="projects-title">
+            <Typewriter segments={[{ text: 'Projects', typed: true }]} startDelay={200} />
+          </h1>
           <p className="projects-description">{description}</p>
         </FadeIn>
         {user && (
-          <div style={{ marginTop: '-4rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
-            <Link to="/admin/projects" className="admin-edit-link" style={{ marginBottom: 0 }}>Edit projects</Link>
-            <Link to="/admin/projects-subtitle" className="admin-edit-link" style={{ marginBottom: 0 }}>Edit subtitle</Link>
+          <div className="admin-actions">
+            <Link to="/admin/projects" className="admin-edit-link">Edit projects</Link>
+            <Link to="/admin/projects-subtitle" className="admin-edit-link">Edit subtitle</Link>
           </div>
         )}
 

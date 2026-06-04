@@ -5,7 +5,6 @@ import '../styles/Navbar.css'
 
 const links = [
   { path: '/', label: 'Home' },
-  { path: '/about', label: 'About' },
   { path: '/projects', label: 'Projects' },
   { path: '/writing', label: 'Writing' },
   { path: '/contact', label: 'Contact' },
@@ -15,20 +14,44 @@ export default function Navbar() {
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('home')
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 24)
+    const onHome = location.pathname === '/'
+    const handler = () => {
+      setScrolled(window.scrollY > 24)
+      if (!onHome) return
+      const about = document.getElementById('about')
+      const reachedAbout = about && about.getBoundingClientRect().top <= window.innerHeight * 0.5
+      setActiveSection(reachedAbout ? 'about' : 'home')
+    }
+    handler()
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
-  }, [])
+  }, [location.pathname])
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
 
-  const isActive = (path) =>
-    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+  const isActive = (link) => {
+    if (location.pathname === '/') {
+      return link.hash ? activeSection === 'about' : link.path === '/' && activeSection === 'home'
+    }
+    if (link.path === '/') return false
+    return location.pathname.startsWith(link.path)
+  }
+
+  const handleNavClick = (e, link) => {
+    setMenuOpen(false)
+
+    // Home: scroll back to top when already on the home page.
+    if (link.path === '/' && location.pathname === '/') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
 
   return (
     <header className={`navbar${scrolled || menuOpen ? ' navbar--scrolled' : ''}`}>
@@ -37,18 +60,16 @@ export default function Navbar() {
 
         <LayoutGroup>
           <ul className="navbar-links">
-            {links.map(({ path, label }) => (
-              <li key={path}>
+            {links.map((link) => (
+              <li key={link.path}>
                 <Link
-                  to={path}
-                  className={`navbar-link${isActive(path) ? ' navbar-link--active' : ''}`}
+                  to={link.path}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className={`navbar-link${isActive(link) ? ' navbar-link--active' : ''}`}
                 >
-                  {label}
-                  {isActive(path) && (
-                    <motion.span
-                      layoutId="nav-indicator"
-                      style={{ position: 'absolute', bottom: '-4px', left: 0, right: 0, height: '1px', background: 'var(--accent)' }}
-                    />
+                  {link.label}
+                  {isActive(link) && (
+                    <motion.span layoutId="nav-indicator" className="nav-indicator" />
                   )}
                 </Link>
               </li>
@@ -86,17 +107,17 @@ export default function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            style={{ overflow: 'hidden' }}
+            className="navbar-mobile-dropdown"
           >
             <ul className="navbar-mobile-list">
-              {links.map(({ path, label }) => (
-                <li key={path}>
+              {links.map((link) => (
+                <li key={link.path}>
                   <Link
-                    to={path}
-                    onClick={() => setMenuOpen(false)}
-                    className={`navbar-mobile-link${isActive(path) ? ' navbar-mobile-link--active' : ''}`}
+                    to={link.path}
+                    onClick={(e) => handleNavClick(e, link)}
+                    className={`navbar-mobile-link${isActive(link) ? ' navbar-mobile-link--active' : ''}`}
                   >
-                    {label}
+                    {link.label}
                   </Link>
                 </li>
               ))}

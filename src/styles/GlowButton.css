@@ -1,0 +1,74 @@
+/* Premium glow button — glass pill with a rotating conic-gradient ring.
+   Override --glow to recolor; defaults to the site accent. */
+.glow-btn {
+  --glow: #ffffff;
+  --glow-radius: 4px;
+  position: relative;
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--glow-radius);
+  cursor: pointer;
+  isolation: isolate;
+  text-decoration: none;
+  box-shadow: 0 15px 35px -8px color-mix(in srgb, var(--glow) 35%, transparent);
+}
+
+/* Rotating glow ring: a conic gradient spinning behind the body, clipped to
+   the pill. The body sits 1.5px inset, so only the ring's edge shows. */
+.glow-btn-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  z-index: 0;
+}
+.glow-btn-ring::before {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    var(--glow) 18%,
+    transparent 45%,
+    transparent 100%
+  );
+  animation: glow-btn-spin 3s linear infinite;
+}
+@keyframes glow-btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Static variant: a uniform glowing border, no rotation. */
+.glow-btn--static .glow-btn-ring::before {
+  inset: 0;
+  background: var(--glow);
+  animation: none;
+}
+
+.glow-btn-body {
+  position: relative;
+  z-index: 1;
+  margin: 1.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: calc(var(--glow-radius) - 1.5px);
+  padding: 16px 32px;
+  background-color: rgba(13, 13, 13, 0.55);
+  backdrop-filter: blur(24px);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: clamp(9px, 1.5vw, 11px);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-btn-ring::before { animation: none; }
+}

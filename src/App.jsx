@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { useEffect, useRef } from 'react'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import GridLines from './components/GridLines'
 import RequireAuth from './components/RequireAuth'
 import Home from './pages/Home'
-import About from './pages/About'
 import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Writing from './pages/Writing'
@@ -45,7 +46,6 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:slug" element={<ProjectDetail />} />
         <Route path="/writing" element={<Writing />} />
@@ -71,12 +71,14 @@ function AnimatedRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <GridLines />
       <AdminShortcut />
       <Navbar />
       <main>
         <AnimatedRoutes />
       </main>
       <Footer />
+      <SpeedInsights />
     </BrowserRouter>
   )
 }

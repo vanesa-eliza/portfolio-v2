@@ -1,5 +1,6 @@
 import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
+import Typewriter from '../components/Typewriter'
 import '../styles/Contact.css'
 
 export default function Contact() {
@@ -11,7 +12,9 @@ export default function Contact() {
             <div className="contact-line" />
             <span className="contact-label">Contact</span>
           </div>
-          <h1 className="contact-title">Let&apos;s talk.</h1>
+          <h1 className="contact-title">
+            <Typewriter segments={[{ text: "Let's talk.", typed: true }]} startDelay={200} />
+          </h1>
           <p className="contact-intro">
             I&apos;m currently open to new opportunities — full-time roles, internships, and
             interesting problems worth working on together.

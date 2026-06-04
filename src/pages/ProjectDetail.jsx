@@ -1,62 +1,189 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, animate, useMotionValue, useTransform, useMotionValueEvent } from 'framer-motion'
 import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
 import CppSnippets from '../components/CppSnippets'
 import { supabase } from '../lib/supabase'
 import '../styles/ProjectDetail.css'
 
-function ImageCarousel({ images, title }) {
-  const [index, setIndex] = useState(0)
-  const [direction, setDirection] = useState(1)
+// Wrap a relative offset into the shortest signed distance on a ring of `len`
+// items, so item positions flow infinitely in either direction.
+function wrapRel(rel, len) {
+  if (len <= 0) return 0
+  const half = len / 2
+  return ((rel + half) % len + len) % len - half
+}
 
-  function go(next) {
-    setDirection(next > index ? 1 : -1)
-    setIndex(next)
-  }
+// A single media tile positioned in 3D space. Its transform is derived live
+// from the shared `pos` motion value, so dragging/animating `pos` makes every
+// tile scale, rotate, and reposition based on its distance from centre.
+function CarouselCard({ image, alt, i, pos, len, spacing }) {
+  const src = image.src ?? image
+  const rel = useTransform(pos, (p) => wrapRel(i - p, len))
 
-  function prev() { go((index - 1 + images.length) % images.length) }
-  function next() { go((index + 1) % images.length) }
+  const x = useTransform(rel, (r) => r * spacing)
+  const rotateY = useTransform(rel, (r) => -Math.max(-2, Math.min(2, r)) * 38)
+  const z = useTransform(rel, (r) => -Math.abs(r) * 260)
+  const scale = useTransform(rel, (r) => Math.max(0.55, 1 - Math.abs(r) * 0.22))
+  const opacity = useTransform(rel, (r) => (Math.abs(r) > 2.6 ? 0 : Math.max(0, 1 - Math.abs(r) * 0.34)))
+  const filter = useTransform(rel, (r) => `brightness(${Math.max(0.45, 1 - Math.abs(r) * 0.3)})`)
+  const zIndex = useTransform(rel, (r) => Math.round(100 - Math.abs(r) * 10))
 
   return (
-    <div className="carousel">
-      <AnimatePresence mode="wait" custom={direction}>
-        <motion.img
-          key={index}
-          src={images[index].src ?? images[index]}
-          alt={`${title} screenshot ${index + 1}`}
-          custom={direction}
-          variants={{
-            enter: (d) => ({ x: d * 40, opacity: 0 }),
-            center: { x: 0, opacity: 1 },
-            exit: (d) => ({ x: d * -40, opacity: 0 }),
-          }}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="carousel-image"
-        />
-      </AnimatePresence>
+    <motion.div
+      className="carousel-card"
+      style={{ x, rotateY, z, scale, opacity, filter, zIndex }}
+      aria-hidden="true"
+    >
+      <img src={src} alt={alt} className="carousel-card-image" draggable={false} />
+    </motion.div>
+  )
+}
 
-      <button onClick={prev} className="carousel-btn carousel-btn--prev">←</button>
-      <button onClick={next} className="carousel-btn carousel-btn--next">→</button>
+function ImageCarousel({ images, title }) {
+  const len = images.length
+  const containerRef = useRef(null)
+  const pos = useMotionValue(0)
+  const animRef = useRef(null)
+  const posStart = useRef(0)
+  const didDrag = useRef(false)
+  const [spacing, setSpacing] = useState(320)
+  const [activeIndex, setActiveIndex] = useState(0)
 
-      {images[index].caption && (
-        <div className="carousel-caption">{images[index].caption}</div>
-      )}
-      <div className="carousel-counter">{index + 1} / {images.length}</div>
+  // Keep the rounded active index in sync for caption / counter / dots.
+  useMotionValueEvent(pos, 'change', (p) => {
+    const idx = ((Math.round(p) % len) + len) % len
+    setActiveIndex((prev) => (prev === idx ? prev : idx))
+  })
 
-      <div className="carousel-dots">
-        {images.map((_, i) => (
-          <button
+  // Responsive spacing: neighbours peek in from the sides on any width.
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      setSpacing(el.clientWidth * 0.6)
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  const goTo = useCallback(
+    (target, opts) => {
+      animRef.current?.stop()
+      animRef.current = animate(pos, target, {
+        type: 'spring',
+        stiffness: 200,
+        damping: 26,
+        ...opts,
+      })
+    },
+    [pos]
+  )
+
+  const goToNext = useCallback(() => goTo(Math.round(pos.get()) + 1), [goTo, pos])
+  const goToPrev = useCallback(() => goTo(Math.round(pos.get()) - 1), [goTo, pos])
+
+  const goToIndex = useCallback(
+    (i) => {
+      const base = Math.round(pos.get())
+      const curMod = ((base % len) + len) % len
+      let diff = i - curMod
+      if (diff > len / 2) diff -= len
+      if (diff < -len / 2) diff += len
+      goTo(base + diff)
+    },
+    [goTo, pos, len]
+  )
+
+  // Wheel / trackpad navigation (native listener so we can preventDefault).
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || len <= 1) return
+    let lock = false
+    function onWheel(e) {
+      // Only hijack horizontal scrolling; let vertical scroll the page.
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
+      // Swallow every horizontal delta — including the inertia tail — so the
+      // browser's swipe-to-go-back/forward gesture never fires over the carousel.
+      e.preventDefault()
+      if (lock || Math.abs(e.deltaX) < 6) return
+      lock = true
+      e.deltaX > 0 ? goToNext() : goToPrev()
+      setTimeout(() => { lock = false }, 320)
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [len, goToNext, goToPrev])
+
+  function onDragStart() {
+    didDrag.current = false
+    animRef.current?.stop()
+    posStart.current = pos.get()
+  }
+  function onDrag(_, info) {
+    if (Math.abs(info.offset.x) > 4) didDrag.current = true
+    pos.set(posStart.current - info.offset.x / spacing)
+  }
+  function onDragEnd(_, info) {
+    const velCards = info.velocity.x / spacing
+    goTo(Math.round(pos.get() - velCards * 0.18)) // project momentum into a snap target
+  }
+  function onLayerClick(e) {
+    if (didDrag.current) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    e.clientX - rect.left < rect.width / 2 ? goToPrev() : goToNext()
+  }
+
+  const caption = images[activeIndex]?.caption
+
+  return (
+    <div className="carousel" ref={containerRef}>
+      <div className="carousel-stage">
+        {images.map((image, i) => (
+          <CarouselCard
             key={i}
-            onClick={() => go(i)}
-            className={`carousel-dot${i === index ? ' carousel-dot--active' : ''}`}
+            image={image}
+            alt={`${title} screenshot ${i + 1}`}
+            i={i}
+            pos={pos}
+            len={len}
+            spacing={spacing}
           />
         ))}
       </div>
+
+      {len > 1 && (
+        <motion.div
+          className="carousel-drag-layer"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.16}
+          dragMomentum={false}
+          onDragStart={onDragStart}
+          onDrag={onDrag}
+          onDragEnd={onDragEnd}
+          onClick={onLayerClick}
+        />
+      )}
+
+      {caption && <div className="carousel-caption">{caption}</div>}
+
+      {len > 1 && (
+        <>
+          <div className="carousel-counter">{activeIndex + 1} / {len}</div>
+          <div className="carousel-dots">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goToIndex(i)}
+                className={`carousel-dot${i === activeIndex ? ' carousel-dot--active' : ''}`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

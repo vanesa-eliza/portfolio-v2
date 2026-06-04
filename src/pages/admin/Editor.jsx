@@ -51,7 +51,7 @@ export default function Editor() {
 
   return (
     <div className="admin-page">
-      <h1 className="admin-title" style={{ marginBottom: '2rem' }}>
+      <h1 className="admin-title admin-title--spaced">
         {isNew ? 'New post' : 'Edit post'}
       </h1>
 

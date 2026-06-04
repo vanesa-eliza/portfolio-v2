@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
+import Typewriter from '../components/Typewriter'
 import PostCard from '../components/PostCard'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
@@ -45,73 +46,37 @@ export default function Writing() {
             <div className="writing-line" />
             <span className="writing-label">Writing</span>
           </div>
-          <h1 className="writing-title">Notes &amp; Essays</h1>
+          <h1 className="writing-title">
+            <Typewriter segments={[{ text: 'Notes & Essays', typed: true }]} startDelay={200} />
+          </h1>
           <p className="writing-description">
             Writing is where I slow down and think. These posts are about my takeaway from modules I took, the projects I&apos;ve
             built and the ideas they surfaced.
           </p>
         </FadeIn>
         {user && (
-          <div style={{ marginTop: '-4rem', marginBottom: '1.5rem' }}>
-            <Link
-              to="/admin/new"
-              style={{
-                fontSize: '0.75rem',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: 'var(--accent)',
-                textDecoration: 'none',
-              }}
-            >
-              + New post
-            </Link>
+          <div className="writing-admin-new">
+            <Link to="/admin/new" className="writing-new-link">+ New post</Link>
           </div>
         )}
 
-        {loading && <p style={{ color: 'var(--muted)' }}>Loading…</p>}
-        {error && <p style={{ color: 'var(--muted)' }}>Failed to load posts.</p>}
+        {loading && <p className="writing-status">Loading…</p>}
+        {error && <p className="writing-status">Failed to load posts.</p>}
 
         <div>
           {posts.map((post, i) => (
             <FadeIn key={post.slug} delay={i * 0.06}>
-              <div style={{ position: 'relative' }}>
+              <div className="writing-post">
                 {user && !post.published && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    right: 0,
-                    fontSize: '0.65rem',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: 'var(--muted)',
-                    border: '1px solid var(--border)',
-                    padding: '0.15rem 0.4rem',
-                    borderRadius: '2px',
-                  }}>
-                    Draft
-                  </span>
+                  <span className="writing-draft-badge">Draft</span>
                 )}
                 <PostCard post={{ ...post, date: post.created_at, readTime: readTime(post.body) }} />
                 {user && (
-                  <div style={{ display: 'flex', gap: '1rem', paddingBottom: '0.5rem' }}>
-                    <Link
-                      to={`/admin/edit/${post.id}`}
-                      style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'none', letterSpacing: '0.1em' }}
-                    >
-                      Edit
-                    </Link>
+                  <div className="writing-admin-actions">
+                    <Link to={`/admin/edit/${post.id}`} className="writing-admin-link">Edit</Link>
                     <button
                       onClick={() => handleDelete(post.id, post.title)}
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--muted)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 0,
-                        letterSpacing: '0.1em',
-                        fontFamily: 'var(--font-sans)',
-                      }}
+                      className="writing-admin-delete"
                     >
                       Delete
                     </button>

@@ -22,7 +22,7 @@ export default function SkillsEditor() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('about').select('value').eq('key', 'skills').single(),
+      supabase.from('about').select('value').eq('key', 'skills').maybeSingle(),
       supabase.from('projects').select('tech'),
     ]).then(([{ data: skillsData }, { data: projectsData }]) => {
       if (skillsData) setSkills(JSON.parse(skillsData.value))
@@ -75,7 +75,7 @@ export default function SkillsEditor() {
       .from('about')
       .upsert({ key: 'skills', value: JSON.stringify(skills), updated_at: new Date().toISOString() }, { onConflict: 'key' })
     if (error) { setError(error.message); setSaving(false) }
-    else navigate('/about')
+    else navigate('/#about')
   }
 
   if (loading) return null
@@ -159,7 +159,7 @@ export default function SkillsEditor() {
         <button className="admin-btn" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save changes'}
         </button>
-        <button className="admin-btn-cancel" type="button" onClick={() => navigate('/about')}>Cancel</button>
+        <button className="admin-btn-cancel" type="button" onClick={() => navigate('/#about')}>Cancel</button>
       </div>
     </div>
   )

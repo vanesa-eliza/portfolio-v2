@@ -1,6 +1,8 @@
 .post-card-link { text-decoration: none; }
 
 .post-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   gap: 2rem;
   padding: 2rem 1rem;
@@ -10,6 +12,13 @@
   transition: background-color 0.2s;
 }
 .post-card:hover { background-color: rgba(17, 17, 17, 0.4); }
+
+/* Keep card content above the particle layer. */
+.post-card > *:not(.card-particles) { position: relative; z-index: 1; }
+
+/* Reveal + play the particles only while hovered. */
+.post-card:hover .card-particles { opacity: 1; }
+.post-card:hover .card-particle { animation-play-state: running; }
 
 .post-date {
   display: none;
@@ -81,3 +90,5 @@
   .post-date { display: block; }
   .post-date-mobile { display: none; }
 }
+
+.post-read-arrow { display: inline-block; }

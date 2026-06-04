@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import '../styles/ParticleSphere.css'
 
 const PORTRAIT_SIZE = 400
 const GAP = 7
@@ -68,6 +69,7 @@ function buildParticles(raw) {
     phase: Math.random() * Math.PI * 2,
     phaseY: Math.random() * Math.PI * 2,
     speed: 0.35 + Math.random() * 0.45,
+    placed: false,
   }))
 }
 
@@ -199,6 +201,16 @@ export default function ParticleSphere() {
         const targetX = sphereX + (portraitX - sphereX) * ease
         const targetY = sphereY + (portraitY - sphereY) * ease
 
+        // Snap to the initial target on the first frame so particles don't
+        // spring in (bounce) from their portrait-local start position on load.
+        if (!p.placed) {
+          p.px = targetX
+          p.py = targetY
+          p.vx = 0
+          p.vy = 0
+          p.placed = true
+        }
+
         // Spring: tight in sphere mode, loose in portrait mode
         const stiffness = 0.18 - ease * 0.1
         const damping = 0.84 + ease * 0.08
@@ -244,9 +256,6 @@ export default function ParticleSphere() {
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ display: 'block', pointerEvents: 'none', width: '100%', height: '100%' }}
-    />
+    <canvas ref={canvasRef} className="particle-sphere-canvas" />
   )
 }

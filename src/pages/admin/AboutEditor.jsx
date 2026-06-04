@@ -15,7 +15,7 @@ export default function AboutEditor() {
       .from('about')
       .select('value')
       .eq('key', 'bio')
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) setValue(data.value)
         setLoading(false)
@@ -30,7 +30,7 @@ export default function AboutEditor() {
       .from('about')
       .upsert({ key: 'bio', value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
     if (error) { setError(error.message); setSaving(false) }
-    else navigate('/about')
+    else navigate('/#about')
   }
 
   if (loading) return null
@@ -55,7 +55,7 @@ export default function AboutEditor() {
           <button className="admin-btn" type="submit" disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
           </button>
-          <button className="admin-btn-cancel" type="button" onClick={() => navigate('/about')}>
+          <button className="admin-btn-cancel" type="button" onClick={() => navigate('/#about')}>
             Cancel
           </button>
         </div>

@@ -17,7 +17,7 @@ export default function ProjectsHeaderEditor() {
       .from('about')
       .select('value')
       .eq('key', 'projects_description')
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) setValue(data.value)
         setLoading(false)

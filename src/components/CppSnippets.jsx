@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import CardParticles from './CardParticles'
 import '../styles/CppSnippets.css'
 
 export default function CppSnippets({ snippets }) {
@@ -87,6 +88,7 @@ function SnippetCard({ snippet, isFlipped, isActive, onClick }) {
       className={`snippet-card${isFlipped ? ' snippet-card--flipped' : ''}${isActive ? ' snippet-card--active' : ''}`}
       onClick={onClick}
     >
+      <CardParticles count={8} />
       <div className="snippet-card-inner">
         <div className="snippet-card-front">
           <span className="snippet-card-category">{snippet.category}</span>

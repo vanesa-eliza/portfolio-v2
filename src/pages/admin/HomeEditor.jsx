@@ -15,7 +15,7 @@ export default function HomeEditor() {
       .from('about')
       .select('value')
       .eq('key', 'home_subtitle')
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) setValue(data.value)
         setLoading(false)

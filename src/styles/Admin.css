@@ -139,6 +139,19 @@
   margin-bottom: 1rem;
 }
 
+/* Inline admin toolbar above a page's content */
+.admin-actions {
+  margin-top: -4rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+.admin-actions .admin-edit-link { margin-bottom: 0; }
+
+.admin-file-input { display: none; }
+
+.admin-title--spaced { margin-bottom: 2rem; }
+
 /* Section header with inline edit link */
 .admin-section-header {
   display: flex;

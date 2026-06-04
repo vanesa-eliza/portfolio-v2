@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import CardParticles from './CardParticles'
 import '../styles/ProjectCard.css'
 
 export default function ProjectCard({ project, index }) {
@@ -11,6 +12,7 @@ export default function ProjectCard({ project, index }) {
     >
       <Link to={`/projects/${project.slug}`} className="project-card-link">
         <article className="project-card">
+          <CardParticles />
           <div className="card-header">
             <div className="card-tags">
               {project.tags.slice(0, 2).map((tag) => (
@@ -26,7 +28,7 @@ export default function ProjectCard({ project, index }) {
 
           <motion.div className="card-cta" whileHover="hovered">
             <span>View Project</span>
-            <motion.span variants={{ hovered: { x: 3 } }} style={{ display: 'inline-block' }}>→</motion.span>
+            <motion.span variants={{ hovered: { x: 3 } }} className="card-cta-arrow">→</motion.span>
           </motion.div>
         </article>
       </Link>

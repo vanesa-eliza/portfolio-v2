@@ -1,6 +1,8 @@
 .project-card-link { display: block; height: 100%; text-decoration: none; }
 
 .project-card {
+  position: relative;
+  overflow: hidden;
   height: 100%;
   background-color: var(--card);
   border: 1px solid var(--border);
@@ -11,6 +13,13 @@
   transition: all 0.3s;
 }
 .project-card:hover { border-color: rgba(139, 34, 82, 0.5); transform: translateY(-4px); }
+
+/* Keep card content above the particle layer. */
+.project-card > *:not(.card-particles) { position: relative; z-index: 1; }
+
+/* Reveal + play the particles only while hovered. */
+.project-card:hover .card-particles { opacity: 1; }
+.project-card:hover .card-particle { animation-play-state: running; }
 
 .card-header {
   display: flex;
@@ -80,3 +89,5 @@
   text-transform: uppercase;
   font-family: var(--font-sans);
 }
+
+.card-cta-arrow { display: inline-block; }

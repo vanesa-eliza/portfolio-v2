@@ -44,6 +44,7 @@
 
 /* Flip card */
 .snippet-card {
+  position: relative;
   perspective: 800px;
   cursor: pointer;
   height: 112px;
@@ -63,6 +64,7 @@
 
 .snippet-card-inner {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
@@ -92,6 +94,10 @@
 .snippet-card:hover .snippet-card-front {
   border-color: var(--muted);
 }
+
+/* Reveal + play the particles only while hovered. */
+.snippet-card:hover .card-particles { opacity: 1; }
+.snippet-card:hover .card-particle { animation-play-state: running; }
 
 .snippet-card--active .snippet-card-front,
 .snippet-card--active .snippet-card-back {

@@ -1,0 +1,53 @@
+/* Typewriter cursor + typed-word layout.
+   Each typed word reserves its full width so the line never reflows. */
+
+/* Left-to-right: letters appear in place, cursor advances; the untyped tail is
+   invisible but holds its width. */
+.tw-typed--left {
+  white-space: pre;
+}
+.tw-pending {
+  visibility: hidden;
+}
+
+/* Right-anchored: the sizer reserves the full width and the typed text is
+   absolutely positioned to the right, so the cursor stays fixed on the right
+   and letters get pushed to the left as they appear. */
+.tw-typed--right {
+  position: relative;
+  display: inline-block;
+}
+.tw-sizer {
+  visibility: hidden;
+  white-space: pre;
+}
+.tw-fill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  white-space: pre;
+}
+
+.tw-cursor {
+  display: inline-block;
+  width: 0.06em;
+  height: 0.78em;
+  vertical-align: -0.04em;
+  margin-left: 0.04em;
+  background-color: var(--accent);
+  animation: tw-cursor-blink 0.7s steps(1, end) infinite;
+}
+
+/* Once typing is done: blink 5 times, then stay hidden. */
+.tw-cursor--ending {
+  animation: tw-cursor-blink 0.7s steps(1, end) 5 forwards;
+}
+
+@keyframes tw-cursor-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-cursor { animation: none; opacity: 0; }
+}

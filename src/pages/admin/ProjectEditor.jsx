@@ -316,7 +316,7 @@ export default function ProjectEditor() {
                 <input
                   type="file"
                   accept="image/*"
-                  style={{ display: 'none' }}
+                  className="admin-file-input"
                   disabled={uploading[i]}
                   onChange={(e) => e.target.files[0] && uploadImage(i, e.target.files[0])}
                 />

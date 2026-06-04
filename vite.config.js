@@ -6,10 +6,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'motion': ['framer-motion'],
-          'supabase': ['@supabase/supabase-js'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom)[\\/]/.test(id)) return 'react-vendor'
+          if (id.includes('framer-motion')) return 'motion'
+          if (id.includes('@supabase')) return 'supabase'
         },
       },
     },

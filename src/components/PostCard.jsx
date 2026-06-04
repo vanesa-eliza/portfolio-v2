@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import CardParticles from './CardParticles'
 import '../styles/PostCard.css'
 
 function formatDate(dateStr) {
@@ -14,6 +15,7 @@ export default function PostCard({ post }) {
   return (
     <Link to={`/writing/${post.slug}`} className="post-card-link">
       <article className="post-card">
+        <CardParticles />
         <div className="post-date">{formatDate(post.date)}</div>
         <div className="post-content">
           <div className="post-content-header">
@@ -24,7 +26,7 @@ export default function PostCard({ post }) {
           <div className="post-date-mobile">{formatDate(post.date)}</div>
           <motion.div className="post-read-link" whileHover="hovered">
             <span>Read Post</span>
-            <motion.span variants={{ hovered: { x: 3 } }} style={{ display: 'inline-block' }}>→</motion.span>
+            <motion.span variants={{ hovered: { x: 3 } }} className="post-read-arrow">→</motion.span>
           </motion.div>
         </div>
       </article>

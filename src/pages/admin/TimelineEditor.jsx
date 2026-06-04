@@ -64,7 +64,7 @@ export default function TimelineEditor() {
       .from('about')
       .select('value')
       .eq('key', type)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) setItems(JSON.parse(data.value))
         setLoading(false)
@@ -110,7 +110,7 @@ export default function TimelineEditor() {
       .from('about')
       .upsert({ key: type, value: JSON.stringify(items), updated_at: new Date().toISOString() }, { onConflict: 'key' })
     if (error) { setError(error.message); setSaving(false) }
-    else navigate('/about')
+    else navigate('/#about')
   }
 
   if (loading) return null
@@ -174,7 +174,7 @@ export default function TimelineEditor() {
         <button className="admin-btn" onClick={handleSave} disabled={saving}>
           {saving ? 'Saving…' : 'Save changes'}
         </button>
-        <button className="admin-btn-cancel" type="button" onClick={() => navigate('/about')}>Cancel</button>
+        <button className="admin-btn-cancel" type="button" onClick={() => navigate('/#about')}>Cancel</button>
       </div>
     </div>
   )
