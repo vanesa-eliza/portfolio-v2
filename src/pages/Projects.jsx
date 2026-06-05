@@ -40,10 +40,10 @@ export default function Projects() {
           <p className="projects-description">{description}</p>
         </FadeIn>
         {user && (
-          <div className="admin-toolbar">
+          <FadeIn className="admin-toolbar" delay={0.1}>
             <Link to="/admin/projects" className="admin-edit-link">Edit projects</Link>
             <Link to="/admin/projects-subtitle" className="admin-edit-link">Edit subtitle</Link>
-          </div>
+          </FadeIn>
         )}
 
         <div className="projects-grid">

@@ -55,9 +55,9 @@ export default function Writing() {
           </p>
         </FadeIn>
         {user && (
-          <div className="writing-admin-new">
+          <FadeIn className="writing-admin-new" delay={0.1}>
             <Link to="/admin/new" className="writing-new-link">+ New post</Link>
-          </div>
+          </FadeIn>
         )}
 
         {loading && <p className="writing-status">Loading…</p>}

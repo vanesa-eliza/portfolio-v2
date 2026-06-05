@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { SpeedInsights } from '@vercel/speed-insights/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, lazy, Suspense } from 'react'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -12,15 +12,18 @@ import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Writing from './pages/Writing'
 import PostDetail from './pages/PostDetail'
-import Login from './pages/admin/Login'
-import Editor from './pages/admin/Editor'
-import AboutEditor from './pages/admin/AboutEditor'
-import HomeEditor from './pages/admin/HomeEditor'
-import TimelineEditor from './pages/admin/TimelineEditor'
-import SkillsEditor from './pages/admin/SkillsEditor'
-import ProjectsAdmin from './pages/admin/ProjectsAdmin'
-import ProjectEditor from './pages/admin/ProjectEditor'
-import ProjectsHeaderEditor from './pages/admin/ProjectsHeaderEditor'
+
+// Admin pages are tooling only the site owner uses, so they are code-split
+// out of the initial bundle and loaded on demand when an /admin route is hit.
+const Login = lazy(() => import('./pages/admin/Login'))
+const Editor = lazy(() => import('./pages/admin/Editor'))
+const AboutEditor = lazy(() => import('./pages/admin/AboutEditor'))
+const HomeEditor = lazy(() => import('./pages/admin/HomeEditor'))
+const TimelineEditor = lazy(() => import('./pages/admin/TimelineEditor'))
+const SkillsEditor = lazy(() => import('./pages/admin/SkillsEditor'))
+const ProjectsAdmin = lazy(() => import('./pages/admin/ProjectsAdmin'))
+const ProjectEditor = lazy(() => import('./pages/admin/ProjectEditor'))
+const ProjectsHeaderEditor = lazy(() => import('./pages/admin/ProjectsHeaderEditor'))
 
 function AdminShortcut() {
   const navigate = useNavigate()
@@ -43,6 +46,7 @@ function AnimatedRoutes() {
   const location = useLocation()
   return (
     <AnimatePresence mode="wait">
+      <Suspense fallback={null}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />
@@ -62,6 +66,7 @@ function AnimatedRoutes() {
         <Route path="/admin/projects/new" element={<RequireAuth><ProjectEditor /></RequireAuth>} />
         <Route path="/admin/projects/:slug/edit" element={<RequireAuth><ProjectEditor /></RequireAuth>} />
       </Routes>
+      </Suspense>
     </AnimatePresence>
   )
 }

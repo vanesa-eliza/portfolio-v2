@@ -170,7 +170,7 @@ export default function Home() {
           <div className="hero-content-inner">
             <p className="hero-subtitle hero-fade hero-delay-2">{subtitle}</p>
             {user && (
-              <Link to="/admin/home" className="admin-edit-link">Edit subtitle</Link>
+              <Link to="/admin/home" className="admin-edit-link hero-fade hero-delay-2">Edit subtitle</Link>
             )}
           </div>
 
