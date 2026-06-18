@@ -16,11 +16,11 @@ Personal portfolio site built with React and Vite, backed by Supabase for all co
 
 ## Why I Built This
 My first ever portfolio was static HTML/PHP. I rebuilt v2 to learn a modern frontend stack while maintaining full control over design and behavior. The main challenge was architecting a CMS that could manage content, handle image uploads and maintain 
-smooth animations across page transitions, all without UI frameworks.
+smooth animations across page transitions, all without CSS utility frameworks.
 
 ## Key Design Decisions
 - **Supabase for backend**: Real-time database + built-in auth for admin panel, avoiding the need for a separate backend server
-- **Plain CSS over utility frameworks**: Per component CSS files with design tokens as CSS variables gives flexibility and keeps bundle small
+- **Plain CSS over utility frameworks**: Chose custom CSS over utility frameworks for fine-grained control. Design tokens as CSS variables keep everything consistent without framework bloat.
 - **Canvas for particle sphere**: Animating thousands of DOM elements would be slow. Built it in Canvas instead to keep it smooth and still obtain the desired outcome.
 - **Supabase CMS with hidden admin access**: Instead of redeploying the entire site every time I update portfolio content, I built a CMS backed by Supabase. The admin panel is hidden from visitors but accessible to me for editing, keeping the site clean while staying easy to maintain.
 
@@ -102,7 +102,7 @@ Sign in with the Supabase auth user you created during setup (step 6). From ther
 
 ## What I Learned
 - Full-stack architecture: How frontend and backend must work together for a seamless user experience
-- Performance considerations: Optimizing animations, managing Canvas rendering and lazy-loading content. Also learning about the features made available by google search control to optimise visibility.
+- Performance considerations: Optimizing animations, managing Canvas rendering and lazy-loading content.
 - Real-time databases: Using Supabase for authentication, real-time updates and file storage
 - State management: Handling complex UI state with React hooks and route-synced scroll positions
 - Deployment and DevOps: Deploying to production with environment variables, database migrations and storage policies.
