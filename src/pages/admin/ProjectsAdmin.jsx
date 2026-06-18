@@ -19,12 +19,25 @@ export default function ProjectsAdmin() {
   }, [])
 
   async function handleDelete(slug) {
+    if (!window.confirm(`Delete "${slug}"? This also removes its uploaded images and cannot be undone.`)) return
     const { error: err } = await supabase
       .from('projects')
       .delete()
       .eq('slug', slug)
-    if (err) setError(err.message)
-    else setItems((prev) => prev.filter((p) => p.slug !== slug))
+    if (err) {
+      setError(err.message)
+      return
+    }
+    setItems((prev) => prev.filter((p) => p.slug !== slug))
+
+    // Remove the project's uploaded images so they don't orphan in storage.
+    // Files live under `${slug}/` (see ProjectEditor upload path).
+    const { data: files } = await supabase.storage.from('project-images').list(slug)
+    if (files && files.length > 0) {
+      await supabase.storage
+        .from('project-images')
+        .remove(files.map((f) => `${slug}/${f.name}`))
+    }
   }
 
   return (

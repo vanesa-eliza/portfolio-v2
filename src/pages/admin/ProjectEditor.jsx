@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import '../../styles/Admin.css'
@@ -60,6 +60,14 @@ function formToProject(form) {
   }
 }
 
+// Extract the in-bucket path (e.g. "my-project/123.png") from a project-images
+// public URL. Returns null for URLs that aren't from this bucket.
+function storagePathFromUrl(src) {
+  const marker = '/project-images/'
+  const i = src.indexOf(marker)
+  return i === -1 ? null : src.slice(i + marker.length)
+}
+
 function slugify(str) {
   return str
     .toLowerCase()
@@ -76,6 +84,9 @@ export default function ProjectEditor() {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState({})
   const [error, setError] = useState('')
+  // Image URLs the project had when it was loaded, so we can delete from storage
+  // any that get dropped or replaced on save.
+  const originalImageSrcs = useRef([])
 
   useEffect(() => {
     if (isNew) return
@@ -85,7 +96,12 @@ export default function ProjectEditor() {
       .eq('slug', slug)
       .single()
       .then(({ data }) => {
-        if (data) setForm(projectToForm(data))
+        if (data) {
+          setForm(projectToForm(data))
+          originalImageSrcs.current = (data.images ?? [])
+            .map((img) => img?.src)
+            .filter(Boolean)
+        }
       })
   }, [slug, isNew])
 
@@ -156,13 +172,25 @@ export default function ProjectEditor() {
         { onConflict: 'slug' }
       )
 
-    setSaving(false)
-
     if (err) {
+      setSaving(false)
       setError(err.message)
-    } else {
-      navigate('/admin/projects')
+      return
     }
+
+    // Delete storage files for images that were removed or replaced. Only touch
+    // files we uploaded (their URL contains the bucket path); leave external URLs.
+    const savedSrcs = new Set(project.images.map((img) => img.src))
+    const removedPaths = originalImageSrcs.current
+      .filter((src) => !savedSrcs.has(src))
+      .map(storagePathFromUrl)
+      .filter(Boolean)
+    if (removedPaths.length > 0) {
+      await supabase.storage.from('project-images').remove(removedPaths)
+    }
+
+    setSaving(false)
+    navigate('/admin/projects')
   }
 
   return (
