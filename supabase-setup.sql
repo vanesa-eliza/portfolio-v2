@@ -49,6 +49,39 @@ CREATE POLICY "Auth users have full access to about"
   USING (true)
   WITH CHECK (true);
 
+-- ─── projects ─────────────────────────────────────────────────────────────────
+
+CREATE TABLE projects (
+  id           uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug         text        UNIQUE NOT NULL,
+  title        text        NOT NULL,
+  year         text        NOT NULL DEFAULT '',
+  subtitle     text        NOT NULL DEFAULT '',
+  summary      text        NOT NULL DEFAULT '',
+  description  text        NOT NULL DEFAULT '',
+  highlights   text[]      NOT NULL DEFAULT '{}',
+  tech         text[]      NOT NULL DEFAULT '{}',
+  tags         text[]      NOT NULL DEFAULT '{}',
+  github       text        NOT NULL DEFAULT '',
+  images       jsonb       NOT NULL DEFAULT '[]',
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can read projects
+CREATE POLICY "Public can read projects"
+  ON projects FOR SELECT
+  USING (true);
+
+-- Authenticated users can do everything
+CREATE POLICY "Auth users have full access to projects"
+  ON projects FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
 -- ─── updated_at triggers ──────────────────────────────────────────────────────
 
 CREATE OR REPLACE FUNCTION set_updated_at()
@@ -66,3 +99,27 @@ CREATE TRIGGER posts_updated_at
 CREATE TRIGGER about_updated_at
   BEFORE UPDATE ON about
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TRIGGER projects_updated_at
+  BEFORE UPDATE ON projects
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- ─── seed data (optional) ───────────────────────────────────────────────────────
+--
+-- The `about` table is a key/value store. The site reads these keys; the JSON-valued
+-- ones (skills/education/experience) must hold valid JSON in the shapes shown below.
+-- These rows are starter placeholders so a fresh deploy renders something — edit them
+-- later through the admin CMS. ON CONFLICT DO NOTHING means re-running this file never
+-- overwrites content you have already saved.
+
+INSERT INTO about (key, value) VALUES
+  ('home_subtitle', 'CS & AI student building web and ML projects.'),
+  ('bio', 'Write a short bio here.'),
+  ('projects_description', 'A selection of things I have built.'),
+  -- skills: object of category -> array of tags
+  ('skills', '{"Languages":["Python","JavaScript"],"Frameworks & Libraries":["React"],"Tools":["Git"]}'),
+  -- education: array of { period, title, institution, detail: [bullets] }
+  ('education', '[{"period":"2023 — Present","title":"BSc Computer Science & AI","institution":"Queen Mary University of London","detail":["Add a highlight here."]}]'),
+  -- experience: array of { period, title, context, detail: "text" }
+  ('experience', '[{"period":"2024","title":"Your Role","context":"Company / org name","detail":"What you did."}]')
+ON CONFLICT (key) DO NOTHING;
