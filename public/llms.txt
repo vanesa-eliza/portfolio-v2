@@ -1,0 +1,16 @@
+# Vanesa Chetrusca — Portfolio
+
+> Personal portfolio of Vanesa Chetrusca, a Computer Science & AI student at Queen Mary University of London, showcasing projects in web development, machine learning, and software engineering.
+
+The site is a single-page React application. Project details and writing posts are loaded dynamically, so the links below point to the main entry pages where that content is listed.
+
+## Main pages
+
+- [Home](https://vanesachetruscaportfolio.vercel.app/): Introduction, featured projects, and overview.
+- [Projects](https://vanesachetruscaportfolio.vercel.app/projects): Full list of software, web, and ML projects with detail pages.
+- [Writing](https://vanesachetruscaportfolio.vercel.app/writing): Blog posts and articles.
+
+## Optional
+
+- [robots.txt](https://vanesachetruscaportfolio.vercel.app/robots.txt): Crawler directives.
+- [Sitemap](https://vanesachetruscaportfolio.vercel.app/sitemap.xml): XML sitemap of indexable pages.
