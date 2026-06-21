@@ -121,5 +121,53 @@ INSERT INTO about (key, value) VALUES
   -- education: array of { period, title, institution, detail: [bullets] }
   ('education', '[{"period":"2023 — Present","title":"BSc Computer Science & AI","institution":"Queen Mary University of London","detail":["Add a highlight here."]}]'),
   -- experience: array of { period, title, context, detail: "text" }
-  ('experience', '[{"period":"2024","title":"Your Role","context":"Company / org name","detail":"What you did."}]')
+  ('experience', '[{"period":"2024","title":"Your Role","context":"Company / org name","detail":"What you did."}]'),
+  -- certificates: array of { title, issuer, date, image (public URL), url (verification link) }
+  ('certificates', '[]')
 ON CONFLICT (key) DO NOTHING;
+
+-- ─── storage: project-images bucket ───────────────────────────────────────────
+--
+-- Project screenshots uploaded through the admin CMS live in a public
+-- `project-images` bucket (project pages load them via public URLs). Re-runnable:
+-- the bucket upsert keeps an existing bucket public, and policies are dropped
+-- first so re-running never errors on "already exists".
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('project-images', 'project-images', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Public can read project-images" ON storage.objects;
+CREATE POLICY "Public can read project-images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'project-images');
+
+DROP POLICY IF EXISTS "Auth users manage project-images" ON storage.objects;
+CREATE POLICY "Auth users manage project-images"
+  ON storage.objects FOR ALL
+  TO authenticated
+  USING (bucket_id = 'project-images')
+  WITH CHECK (bucket_id = 'project-images');
+
+-- ─── storage: certificates bucket ─────────────────────────────────────────────
+--
+-- Certificate images uploaded through the admin CMS are stored in a public
+-- `certificates` bucket (the carousel loads them via public URLs). This block is
+-- re-runnable: the bucket upsert keeps an existing bucket public, and the policies
+-- are dropped first so re-running never errors on "already exists".
+
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('certificates', 'certificates', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+DROP POLICY IF EXISTS "Public can read certificates" ON storage.objects;
+CREATE POLICY "Public can read certificates"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'certificates');
+
+DROP POLICY IF EXISTS "Auth users manage certificates" ON storage.objects;
+CREATE POLICY "Auth users manage certificates"
+  ON storage.objects FOR ALL
+  TO authenticated
+  USING (bucket_id = 'certificates')
+  WITH CHECK (bucket_id = 'certificates');

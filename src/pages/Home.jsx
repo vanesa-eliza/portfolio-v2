@@ -6,6 +6,7 @@ import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
 import GlowButton from '../components/GlowButton'
 import Typewriter from '../components/Typewriter'
+import Certificates from '../components/Certificates'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
 
@@ -82,12 +83,14 @@ export default function Home() {
   const [skills, setSkills] = useState(DEFAULT_SKILLS)
   const [educationItems, setEducationItems] = useState(education)
   const [experienceItems, setExperienceItems] = useState(experience)
+  const [certificateItems, setCertificateItems] = useState([])
+  const [certsOpen, setCertsOpen] = useState(false)
 
   useEffect(() => {
     supabase
       .from('about')
       .select('key, value')
-      .in('key', ['home_subtitle', 'bio', 'skills', 'education', 'experience'])
+      .in('key', ['home_subtitle', 'bio', 'skills', 'education', 'experience', 'certificates'])
       .then(({ data }) => {
         if (!data) return
         const map = Object.fromEntries(data.map((r) => [r.key, r.value]))
@@ -96,6 +99,7 @@ export default function Home() {
         if (map.skills) setSkills(JSON.parse(map.skills))
         if (map.education) setEducationItems(JSON.parse(map.education))
         if (map.experience) setExperienceItems(JSON.parse(map.experience))
+        if (map.certificates) setCertificateItems(JSON.parse(map.certificates))
       })
 
     supabase
@@ -126,7 +130,7 @@ export default function Home() {
   useLayoutEffect(() => {
     if (!pendingSection.current) return
     document.getElementById(pendingSection.current)?.scrollIntoView({ behavior: 'instant', block: 'start' })
-  }, [featuredProjects, educationItems, experienceItems, bio, skills, subtitle])
+  }, [featuredProjects, educationItems, experienceItems, certificateItems, bio, skills, subtitle])
 
   useEffect(() => {
     const cancel = () => { pendingSection.current = null }
@@ -264,9 +268,21 @@ export default function Home() {
                   </div>
                 </div>
               ))}
+              {(certificateItems.length > 0 || user) && (
+                <button
+                  type="button"
+                  className="cert-toggle"
+                  aria-expanded={certsOpen}
+                  onClick={() => setCertsOpen((o) => !o)}
+                >
+                  {certsOpen ? 'Hide certificates' : 'View certificates'}
+                </button>
+              )}
             </div>
           </FadeIn>
         </div>
+
+        <Certificates open={certsOpen} items={certificateItems} user={user} />
 
         <FadeIn>
           <div id="education" className="about-section">

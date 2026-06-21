@@ -24,6 +24,7 @@ const SkillsEditor = lazy(() => import('./pages/admin/SkillsEditor'))
 const ProjectsAdmin = lazy(() => import('./pages/admin/ProjectsAdmin'))
 const ProjectEditor = lazy(() => import('./pages/admin/ProjectEditor'))
 const ProjectsHeaderEditor = lazy(() => import('./pages/admin/ProjectsHeaderEditor'))
+const CertificatesEditor = lazy(() => import('./pages/admin/CertificatesEditor'))
 
 function AdminShortcut() {
   const navigate = useNavigate()
@@ -63,6 +64,7 @@ function AnimatedRoutes() {
         <Route path="/admin/skills" element={<RequireAuth><SkillsEditor /></RequireAuth>} />
         <Route path="/admin/projects" element={<RequireAuth><ProjectsAdmin /></RequireAuth>} />
         <Route path="/admin/projects-subtitle" element={<RequireAuth><ProjectsHeaderEditor /></RequireAuth>} />
+        <Route path="/admin/certificates" element={<RequireAuth><CertificatesEditor /></RequireAuth>} />
         <Route path="/admin/projects/new" element={<RequireAuth><ProjectEditor /></RequireAuth>} />
         <Route path="/admin/projects/:slug/edit" element={<RequireAuth><ProjectEditor /></RequireAuth>} />
       </Routes>
