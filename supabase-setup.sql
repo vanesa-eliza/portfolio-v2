@@ -3,15 +3,19 @@
 -- ─── posts ────────────────────────────────────────────────────────────────────
 
 CREATE TABLE posts (
-  id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
-  slug        text        UNIQUE NOT NULL,
-  title       text        NOT NULL,
-  excerpt     text        NOT NULL DEFAULT '',
-  body        text        NOT NULL,
-  published   boolean     NOT NULL DEFAULT false,
-  created_at  timestamptz NOT NULL DEFAULT now(),
-  updated_at  timestamptz NOT NULL DEFAULT now()
+  id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug                text        UNIQUE NOT NULL,
+  title               text        NOT NULL,
+  excerpt             text        NOT NULL DEFAULT '',
+  body                text        NOT NULL,
+  published           boolean     NOT NULL DEFAULT false,
+  newsletter_sent_at  timestamptz,  -- set when the post is emailed to subscribers
+  created_at          timestamptz NOT NULL DEFAULT now(),
+  updated_at          timestamptz NOT NULL DEFAULT now()
 );
+
+-- For databases created before the newsletter feature: add the column in place.
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS newsletter_sent_at timestamptz;
 
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
@@ -78,6 +82,36 @@ CREATE POLICY "Public can read projects"
 -- Authenticated users can do everything
 CREATE POLICY "Auth users have full access to projects"
   ON projects FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+-- ─── subscribers ──────────────────────────────────────────────────────────────
+--
+-- Email list for the writing newsletter. The list is private: anyone may insert
+-- their own email (subscribe), but there is no public SELECT, so visitors can
+-- never read who is subscribed. Unsubscribes are handled by the `unsubscribe`
+-- edge function using the service-role key (which bypasses RLS), keyed on the
+-- per-row `token` embedded in each email's unsubscribe link.
+
+CREATE TABLE subscribers (
+  id          uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  email       text        UNIQUE NOT NULL,
+  token       uuid        NOT NULL DEFAULT gen_random_uuid(),
+  confirmed   boolean     NOT NULL DEFAULT true,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can subscribe (insert their email) — but cannot read the list.
+CREATE POLICY "Public can subscribe"
+  ON subscribers FOR INSERT
+  WITH CHECK (true);
+
+-- Authenticated admin can read and manage the full list.
+CREATE POLICY "Auth users manage subscribers"
+  ON subscribers FOR ALL
   TO authenticated
   USING (true)
   WITH CHECK (true);

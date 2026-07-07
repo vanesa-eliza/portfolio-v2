@@ -4,6 +4,7 @@ import PageTransition from '../components/PageTransition'
 import FadeIn from '../components/FadeIn'
 import Typewriter from '../components/Typewriter'
 import PostCard from '../components/PostCard'
+import SubscribeForm from '../components/SubscribeForm'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
 import '../styles/Writing.css'
@@ -86,6 +87,10 @@ export default function Writing() {
             </FadeIn>
           ))}
         </div>
+
+        <FadeIn>
+          <SubscribeForm />
+        </FadeIn>
       </div>
     </PageTransition>
   )

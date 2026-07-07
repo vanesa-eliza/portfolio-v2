@@ -330,3 +330,19 @@
   border: 1px solid var(--border);
   border-radius: 4px;
 }
+
+.admin-newsletter {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.admin-newsletter-status {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}

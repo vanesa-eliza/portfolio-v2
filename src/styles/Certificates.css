@@ -33,25 +33,21 @@
 /* ─── Auto-scrolling carousel ───────────────────────────────────────────── */
 
 .cert-marquee {
-  overflow: hidden;
+  /* scrollLeft is driven by JS for both the auto-scroll and the mouse wheel. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   /* Fade the cards into the page at both edges. */
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
+.cert-marquee::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
 .cert-track {
   display: flex;
   align-items: center;
   width: max-content;
-  will-change: transform;
-  animation: cert-scroll linear infinite;
-}
-/* Pause so a card under the cursor can be read and clicked. */
-.cert-marquee:hover .cert-track { animation-play-state: paused; }
-
-@keyframes cert-scroll {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
 }
 
 .cert-card {
@@ -72,12 +68,6 @@
 .cert-card:hover {
   border-color: rgba(139, 34, 82, 0.5);
   transform: translateY(-2px);
-}
-
-/* Respect reduced-motion: stop the loop and let people scroll manually. */
-@media (prefers-reduced-motion: reduce) {
-  .cert-marquee { overflow-x: auto; }
-  .cert-track { animation: none; }
 }
 
 .cert-card-image {

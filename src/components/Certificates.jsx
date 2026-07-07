@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/Certificates.css'
 
@@ -29,6 +29,7 @@ function Card({ cert, onOpen }) {
 
 export default function Certificates({ open, items, user }) {
   const [active, setActive] = useState(null)
+  const marqueeRef = useRef(null)
 
   useEffect(() => {
     if (!active) return
@@ -41,13 +42,69 @@ export default function Certificates({ open, items, user }) {
     }
   }, [active])
 
-  if (!open) return null
-
-  const caption = active && (active.title || active.issuer || active.date || active.url)
   const set = []
   if (items.length > 0) while (set.length < 8) set.push(...items)
   const loop = [...set, ...set]
   const duration = Math.max(30, set.length * 5)
+
+  // Drive the carousel through scrollLeft so the auto-scroll animation and
+  // manual mouse-wheel scrolling share one mechanism. The content is doubled,
+  // so wrapping at the halfway point keeps the loop seamless in both directions.
+  useEffect(() => {
+    const el = marqueeRef.current
+    if (!open || !el || items.length === 0) return
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let hovering = false
+    let last = null
+    let raf = 0
+    // Track position as a float so tiny per-frame steps aren't lost to the
+    // browser's pixel-snapping of scrollLeft — that keeps the loop moving.
+    let pos = el.scrollLeft
+
+    const norm = (x) => {
+      const half = el.scrollWidth / 2
+      if (x >= half) return x - half
+      if (x < 0) return x + half
+      return x
+    }
+
+    const step = (t) => {
+      const dt = last == null ? 0 : Math.min(t - last, 50)
+      last = t
+      if (!hovering && dt > 0) {
+        pos = norm(pos + (el.scrollWidth / 2 / (duration * 1000)) * dt)
+        el.scrollLeft = pos
+      }
+      raf = requestAnimationFrame(step)
+    }
+
+    const onEnter = () => { hovering = true }
+    const onLeave = () => { hovering = false; last = null; pos = el.scrollLeft }
+    const onWheel = (e) => {
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
+      if (!delta) return
+      e.preventDefault()
+      pos = norm(el.scrollLeft + delta)
+      el.scrollLeft = pos
+    }
+
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+    el.addEventListener('wheel', onWheel, { passive: false })
+    if (!reduce) raf = requestAnimationFrame(step)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      el.removeEventListener('mouseenter', onEnter)
+      el.removeEventListener('mouseleave', onLeave)
+      el.removeEventListener('wheel', onWheel)
+    }
+  }, [open, items, duration])
+
+  if (!open) return null
+
+  const caption = active && (active.title || active.issuer || active.date || active.url)
 
   return (
     <div className="about-certificates">
@@ -59,8 +116,8 @@ export default function Certificates({ open, items, user }) {
       {items.length === 0 ? (
         <p className="cert-empty">No certificates yet.</p>
       ) : (
-        <div className="cert-marquee">
-          <div className="cert-track" style={{ animationDuration: `${duration}s` }}>
+        <div className="cert-marquee" ref={marqueeRef}>
+          <div className="cert-track">
             {loop.map((cert, i) => (
               <Card key={i} cert={cert} onOpen={setActive} />
             ))}
